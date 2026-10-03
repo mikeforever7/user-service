@@ -35,7 +35,7 @@ public class UserService {
         log.info("Пользователь успешно обновлён: id={}", user.getId());
     }
 
-    public void delete(int id) {
+    public void delete(Long id) {
         log.info("Удаление пользователя: id={}", id);
         boolean deleted = userDAO.delete(id);
         if (!deleted) {
@@ -45,7 +45,7 @@ public class UserService {
         log.info("Пользователь успешно удалён: id={}", id);
     }
 
-    public User getById(int id) {
+    public User getById(Long id) {
         log.info("Поиск пользователя по id={}", id);
         User user = userDAO.findUserById(id).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
         log.info("Пользователь найден: id={}, email={}", user.getId(), user.getEmail());

@@ -39,11 +39,11 @@ public class UserDAO {
         }
     }
 
-    public boolean delete(int id) {
+    public boolean delete(Long id) {
         try (Session session = sessionFactory.openSession()) {
             Transaction transaction = session.beginTransaction();
             try {
-                User user = session.find(User.class,id);
+                User user = session.find(User.class, id);
                 if (user == null) {
                     transaction.rollback();
                     return false;
@@ -58,7 +58,7 @@ public class UserDAO {
         }
     }
 
-    public Optional<User> findUserById(int id) {
+    public Optional<User> findUserById(Long id) {
         try (Session session = sessionFactory.openSession()) {
             return Optional.ofNullable(session.find(User.class, id));
         }

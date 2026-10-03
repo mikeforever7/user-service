@@ -108,7 +108,7 @@ public class ConsoleMenu {
 
     private void findUserById() {
         System.out.println("\n=== Ищем пользователя ===");
-        int id = readUserId();
+        long id = readUserId();
         if (id == 0) {
             return;
         }
@@ -133,7 +133,7 @@ public class ConsoleMenu {
     private void updateUser() {
         System.out.println("\n=== Обновляем пользователя ===");
         User user;
-        int id = readUserId();
+        long id = readUserId();
         if (id == 0) {
             return;
         }
@@ -170,7 +170,7 @@ public class ConsoleMenu {
 
     private void deleteUser() {
         System.out.println("\n=== Удаляем пользователя ===");
-        int id = readUserId();
+        long id = readUserId();
         if (id == 0) {
             return;
         }
@@ -219,12 +219,12 @@ public class ConsoleMenu {
         }
     }
 
-    private int readUserId() {
+    private long readUserId() {
         while (true) {
             System.out.println("0 - выход в стартовое меню");
             System.out.print("Введите id пользователя: ");
             try {
-                int id = Integer.parseInt(scanner.nextLine());
+                long id = Long.parseLong(scanner.nextLine());
                 if (id == 0) {
                     return 0;
                 }
