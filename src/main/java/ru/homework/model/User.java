@@ -1,4 +1,4 @@
-package model;
+package ru.homework.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -16,7 +16,6 @@ import java.time.LocalDateTime;
 @Setter
 @Table(name = "\"user\"")
 public class User {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

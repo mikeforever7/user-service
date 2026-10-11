@@ -1,4 +1,4 @@
-package exception;
+package ru.homework.exception;
 
 public class NotFoundException extends RuntimeException {
     public NotFoundException(String message) {

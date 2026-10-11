@@ -1,4 +1,4 @@
-package exception;
+package ru.homework.exception;
 
 public class EmailAlreadyExistsException extends RuntimeException {
     public EmailAlreadyExistsException(String message) {
