@@ -15,7 +15,6 @@ public class UserEventListener {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleUserEvent(UserEvent event) {
         log.info("Отправка события в Kafka: operation={}, email={}", event.operation(), event.email());
-        
         userEventProducer.send(event);
     }
 }

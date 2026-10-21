@@ -5,6 +5,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 import ru.homework.dto.UserRequest;
 import ru.homework.dto.UserResponse;
 import ru.homework.exception.EmailAlreadyExistsException;
@@ -24,7 +25,8 @@ import static org.mockito.Mockito.*;
 class UserServiceTest {
     @Mock
     private UserRepository userRepository;
-
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
     @InjectMocks
     private UserServiceImpl userService;
 
