@@ -1,7 +1,10 @@
 package ru.homework.service;
 
+import org.springframework.context.ApplicationEventPublisher;
 import ru.homework.dto.UserRequest;
 import ru.homework.dto.UserResponse;
+import ru.homework.event.UserEvent;
+import ru.homework.event.UserOperation;
 import ru.homework.exception.EmailAlreadyExistsException;
 import ru.homework.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +23,7 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     @Override
@@ -32,6 +36,7 @@ public class UserServiceImpl implements UserService {
         User user = UserMapper.toEntity(request);
         User savedUser = userRepository.save(user);
         log.info("Пользователь успешно создан: id={}, email={}", savedUser.getId(), savedUser.getEmail());
+        eventPublisher.publishEvent(new UserEvent(UserOperation.CREATED, savedUser.getEmail()));
         return UserMapper.toResponse(savedUser);
     }
 
@@ -66,8 +71,10 @@ public class UserServiceImpl implements UserService {
             log.warn("Удаление пользователя невозможно: пользователь id={} не найден", id);
             return new NotFoundException("Пользователь с id=" + id + " не найден");
         });
+        String email = user.getEmail();
         userRepository.delete(user);
         log.info("Пользователь успешно удалён: id={}", id);
+        eventPublisher.publishEvent(new UserEvent(UserOperation.DELETED, email));
     }
 
     @Override
