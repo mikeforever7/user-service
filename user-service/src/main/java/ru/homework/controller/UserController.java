@@ -1,5 +1,10 @@
 package ru.homework.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import ru.homework.dto.UserRequest;
 import ru.homework.dto.UserResponse;
 import jakarta.validation.Valid;
@@ -18,36 +23,66 @@ import ru.homework.service.UserService;
 
 import java.util.List;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
+@Tag(name = "Users", description = "API для управления пользователями")
 public class UserController {
+
     private final UserService userService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UserResponse create(@Valid @RequestBody UserRequest request) {
-        return userService.create(request);
+    @Operation(summary = "Создать нового пользователя", description = "Создает пользователя и возвращает его данные со ссылками")
+    public EntityModel<UserResponse> create(@Valid @RequestBody UserRequest request) {
+        UserResponse createdUser = userService.create(request);
+
+        return EntityModel.of(createdUser,
+                linkTo(methodOn(UserController.class).getById(createdUser.getId())).withSelfRel(),
+                linkTo(methodOn(UserController.class).getAll()).withRel("all-users")
+        );
     }
 
     @PutMapping("/{id}")
-    public UserResponse update(@PathVariable Long id, @Valid @RequestBody UserRequest request) {
-        return userService.update(id, request);
+    @Operation(summary = "Обновить пользователя", description = "Обновляет данные пользователя по ID")
+    public EntityModel<UserResponse> update(@Parameter(description = "ID пользователя") @PathVariable Long id, @Valid @RequestBody UserRequest request) {
+        UserResponse updatedUser = userService.update(id, request);
+
+        return EntityModel.of(updatedUser,
+                linkTo(methodOn(UserController.class).getById(id)).withSelfRel()
+        );
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long id) {
+    @Operation(summary = "Удалить пользователя", description = "Удаляет пользователя по ID. Возвращает 204 No Content")
+    public void delete(@Parameter(description = "ID пользователя") @PathVariable Long id) {
         userService.delete(id);
     }
 
     @GetMapping("/{id}")
-    public UserResponse getById(@PathVariable Long id) {
-        return userService.getById(id);
+    @Operation(summary = "Получить пользователя по ID", description = "Возвращает данные пользователя и ссылки для навигации")
+    public EntityModel<UserResponse> getById(@Parameter(description = "ID пользователя") @PathVariable Long id) {
+        UserResponse user = userService.getById(id);
+
+        return EntityModel.of(user,
+                linkTo(methodOn(UserController.class).getById(id)).withSelfRel(),
+                linkTo(methodOn(UserController.class).getAll()).withRel("users"),
+                linkTo(UserController.class).slash(id).withRel("delete"));
     }
 
     @GetMapping
-    public List<UserResponse> getAll() {
-        return userService.getAll();
+    @Operation(summary = "Получить всех пользователей", description = "Возвращает коллекцию пользователей с ссылками")
+    public CollectionModel<EntityModel<UserResponse>> getAll() {
+        List<UserResponse> users = userService.getAll();
+
+        List<EntityModel<UserResponse>> userModels = users.stream()
+                .map(user -> EntityModel.of(user, linkTo(methodOn(UserController.class).getById(user.getId())).withSelfRel()))
+                .toList();
+
+        return CollectionModel.of(userModels, linkTo(methodOn(UserController.class).getAll()).withSelfRel());
     }
 }
