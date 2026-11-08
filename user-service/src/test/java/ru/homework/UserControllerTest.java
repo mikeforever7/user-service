@@ -177,8 +177,9 @@ class UserControllerTest {
 
         mockMvc.perform(get("/api/users"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(1))
-                .andExpect(jsonPath("$[0].name").value("Ivan"));
+                .andExpect(jsonPath("$._embedded.userResponseList.length()").value(1))
+                .andExpect(jsonPath("$._embedded.userResponseList[0].name").value("Ivan"))
+                .andExpect(jsonPath("$._links.self.href").exists());
     }
 
     @Test
@@ -187,6 +188,7 @@ class UserControllerTest {
 
         mockMvc.perform(get("/api/users"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(0));
+                .andExpect(jsonPath("$._embedded").doesNotExist());
+
     }
 }
